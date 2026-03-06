@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Eleição - Coordenação</title>
+  <style>
+    body { font-family: Arial, sans-serif; background:#f4f4f9; margin:0; padding:0; }
+    header { background:#004080; color:white; text-align:center; padding:20px; }
+    main { max-width:700px; margin:20px auto; background:white; padding:20px; border-radius:8px; }
+    h2 { color:#004080; }
+    .cargo { margin-bottom:20px; }
+    button { background:#004080; color:white; padding:10px 20px; border:none; border-radius:5px; cursor:pointer; }
+    button:hover { background:#0066cc; }
+    .resultado { margin-top:20px; padding:15px; border:1px solid #ccc; background:#eef; }
+    footer { text-align:center; padding:10px; background:#ddd; margin-top:20px; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Sistema de Eleição</h1>
+    <p>Vote nos cargos disponíveis</p>
+  </header>
+
+  <main>
+    <form id="formVotos">
+      <section class="cargo">
+        <h2>Presidente</h2>
+        <label><input type="radio" name="presidente" value="Candidato A"> Candidato A</label><br>
+        <label><input type="radio" name="presidente" value="Candidato B"> Candidato B</label><br>
+        <label><input type="radio" name="presidente" value="Candidato C"> Candidato C</label>
+      </section>
+
+      <section class="cargo">
+        <h2>Marketing (escolha até 2)</h2>
+        <label><input type="checkbox" name="marketing" value="Candidato A"> Candidato A</label><br>
+        <label><input type="checkbox" name="marketing" value="Candidato B"> Candidato B</label><br>
+        <label><input type="checkbox" name="marketing" value="Candidato C"> Candidato C</label>
+      </section>
+
+      <section class="cargo">
+        <h2>Coordenador de Eventos (escolha até 2)</h2>
+        <label><input type="checkbox" name="eventos" value="Candidato A"> Candidato A</label><br>
+        <label><input type="checkbox" name="eventos" value="Candidato B"> Candidato B</label><br>
+        <label><input type="checkbox" name="eventos" value="Candidato C"> Candidato C</label>
+      </section>
+
+      <button type="submit">Enviar Voto</button>
+    </form>
+
+    <div class="resultado" id="resultado"></div>
+  </main>
+
+  <footer>
+    <p>Coordenação de Eleições © 2026</p>
+  </footer>
+
+  <script>
+    const votos = { presidente:{}, marketing:{}, eventos:{} };
+
+    document.getElementById("formVotos").addEventListener("submit", function(e){
+      e.preventDefault();
+
+      // Presidente
+      const presidente = document.querySelector('input[name="presidente"]:checked');
+      if (presidente) {
+        votos.presidente[presidente.value] = (votos.presidente[presidente.value] || 0) + 1;
+      }
+
+      // Marketing
+      document.querySelectorAll('input[name="marketing"]:checked').forEach(el=>{
+        votos.marketing[el.value] = (votos.marketing[el.value] || 0) + 1;
+      });
+
+      // Eventos
+      document.querySelectorAll('input[name="eventos"]:checked').forEach(el=>{
+        votos.eventos[el.value] = (votos.eventos[el.value] || 0) + 1;
+      });
+
+      mostrarResultados();
+    });
+
+    function mostrarResultados(){
+      let resultado = "<h2>Resultados</h2>";
+
+      // Presidente + Vice
+      const pres = Object.entries(votos.presidente).sort((a,b)=>b[1]-a[1]);
+      if(pres.length>0){
+        resultado += `<p><strong>Presidente:</strong> ${pres[0][0]} (${pres[0][1]} votos)</p>`;
+        if(pres[1]) resultado += `<p><strong>Vice-Presidente:</strong> ${pres[1][0]} (${pres[1][1]} votos)</p>`;
+      }
+
+      // Marketing (2 mais votados)
+      const mark = Object.entries(votos.marketing).sort((a,b)=>b[1]-a[1]);
+      if(mark.length>0){
+        resultado += `<p><strong>Marketing:</strong> ${mark.slice(0,2).map(m=>m[0]+" ("+m[1]+" votos)").join(", ")}</p>`;
+      }
+
+      // Eventos (2 mais votados)
+      const ev = Object.entries(votos.eventos).sort((a,b)=>b[1]-a[1]);
+      if(ev.length>0){
+        resultado += `<p><strong>Coordenadores de Eventos:</strong> ${ev.slice(0,2).map(e=>e[0]+" ("+e[1]+" votos)").join(", ")}</p>`;
+      }
+
+      document.getElementById("resultado").innerHTML = resultado;
+    }
+  </script>
+</body>
+</html>
